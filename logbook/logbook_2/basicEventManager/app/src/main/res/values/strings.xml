@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Event Manager</string>
+    <string name="title_event_list">Events</string>
+    <string name="empty_events">No events found. Tap + to add a new event.</string>
+    <string name="add_event">Add Event</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+    <string name="hint_event_name">Event Name</string>
+    <string name="hint_event_date">Event Date (DD/MM/YYYY)</string>
+    <string name="hint_event_location">Location</string>
+    <string name="hint_event_organizer">Organizer</string>
+    <string name="hint_event_type">Event Type</string>
+
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_date">Invalid date format. Use DD/MM/YYYY</string>
+
+    <string name="type_conference">Conference</string>
+    <string name="type_workshop">Workshop</string>
+    <string name="type_seminar">Seminar</string>
+    <string name="type_social">Social</string>
+    <string name="type_other">Other</string>
+
+    <string name="label_date">Date:</string>
+    <string name="label_location">Location:</string>
+    <string name="label_organizer">Organizer:</string>
+    <string name="label_type">Type:</string>
+</resources>

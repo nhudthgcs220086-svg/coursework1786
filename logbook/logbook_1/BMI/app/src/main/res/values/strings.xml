@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">BMI Calculator</string>
+    <string name="title_bmi_calculator">BMI Calculator</string>
+    <string name="label_weight">Weight (kg)</string>
+    <string name="hint_weight">Enter weight</string>
+    <string name="label_height">Height</string>
+    <string name="hint_height">Enter height</string>
+    <string name="label_unit_height">Height Unit</string>
+    <string name="btn_calculate">Calculate BMI</string>
+    <string name="label_result">Your BMI Result</string>
+    <string name="error_empty_weight">Please enter your weight</string>
+    <string name="error_empty_height">Please enter your height</string>
+    <string name="error_invalid_weight">Weight must be between 1 and 500 kg</string>
+    <string name="error_invalid_height">Height must be valid and greater than 0</string>
+
+    <string name="bmi_underweight">Underweight (Gầy)</string>
+    <string name="bmi_normal">Normal (Bình thường)</string>
+    <string name="bmi_overweight">Overweight (Thừa cân)</string>
+    <string name="bmi_obese">Obese (Béo phì)</string>
+
+    <string name="unit_cm">cm</string>
+    <string name="unit_m">m</string>
+</resources>
