@@ -1,0 +1,86 @@
+﻿using System.Globalization;
+using System.Text.Json;
+using events.app.Models;
+
+namespace events.app.Services;
+
+public sealed class EventService(HttpClient httpClient)
+{
+    private const string EventsEndpoint = "https://event-e4843-default-rtdb.firebaseio.com/.json";
+
+    public async Task<IReadOnlyList<Event>> GetEventsAsync(CancellationToken cancellationToken = default)
+    {
+        using var response = await httpClient.GetAsync(EventsEndpoint, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+        return ParseEvents(document.RootElement);
+    }
+
+    private static IReadOnlyList<Event> ParseEvents(JsonElement root)
+    {
+        if (root.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined)
+            return [];
+
+        if (root.ValueKind == JsonValueKind.Object &&
+            root.TryGetProperty("events", out var eventsNode))
+        {
+            root = eventsNode;
+        }
+
+        var events = new List<Event>();
+        if (root.ValueKind == JsonValueKind.Array)
+        {
+            var index = 0;
+            foreach (var item in root.EnumerateArray())
+                AddEvent(events, item, index++.ToString(CultureInfo.InvariantCulture));
+        }
+        else if (root.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in root.EnumerateObject())
+                AddEvent(events, property.Value, property.Name);
+        }
+
+        return events;
+    }
+
+    private static void AddEvent(List<Event> events, JsonElement item, string fallbackId)
+    {
+        if (item.ValueKind != JsonValueKind.Object)
+            return;
+
+        var title = GetString(item, "title", "name", "eventName");
+        var date = GetString(item, "date", "eventDate", "startDate", "datetime");
+        var location = GetString(item, "location", "venue", "address");
+        var description = GetString(item, "description", "details", "summary");
+        var imageUrl = GetString(item, "imageUrl", "image", "photoUrl", "thumbnail");
+        var id = GetString(item, "id", "eventId") ?? fallbackId;
+
+        events.Add(new Event
+        {
+            Id = id,
+            Title = string.IsNullOrWhiteSpace(title) ? "Untitled event" : title,
+            Date = date ?? string.Empty,
+            Location = location ?? string.Empty,
+            Description = description ?? string.Empty,
+            ImageUrl = imageUrl ?? string.Empty
+        });
+    }
+
+    private static string? GetString(JsonElement item, params string[] names)
+    {
+        foreach (var name in names)
+        {
+            if (!item.TryGetProperty(name, out var value))
+                continue;
+
+            if (value.ValueKind == JsonValueKind.String)
+                return value.GetString();
+            if (value.ValueKind is JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False)
+                return value.ToString();
+        }
+
+        return null;
+    }
+}

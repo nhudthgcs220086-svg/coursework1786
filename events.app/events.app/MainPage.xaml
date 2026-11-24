@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="events.app.MainPage"
+             Title="Events">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20" RowSpacing="14">
+        <VerticalStackLayout Spacing="3">
+            <Label Text="Discover events" FontSize="30" FontAttributes="Bold" />
+            <Label Text="Find something great to do near you" TextColor="Gray" />
+        </VerticalStackLayout>
+
+        <SearchBar x:Name="SearchBox"
+                   Grid.Row="1"
+                   Placeholder="Search by event name or date"
+                   TextChanged="OnSearchTextChanged" />
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <Button x:Name="FavoritesButton"
+                    Text="☆ Favorites"
+                    Clicked="OnFavoritesClicked"
+                    HorizontalOptions="Start" />
+            <Button Grid.Column="1"
+                    Text="Refresh"
+                    Clicked="OnRefreshClicked"
+                    HorizontalOptions="End" />
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="False"
+                               IsVisible="False"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Start"
+                               Margin="0,30" />
+            <Label x:Name="StatusLabel"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center"
+                   IsVisible="False" />
+            <CollectionView x:Name="EventsCollection"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#DDDDDD" StrokeThickness="1" Padding="14" Margin="0,0,0,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnEventTapped"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6">
+                                <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold" />
+                                <Button Grid.Column="1"
+                                        Text="{Binding FavoriteIcon}"
+                                        FontSize="28"
+                                        TextColor="#E6A817"
+                                        Padding="4,0"
+                                        Clicked="OnFavoriteClicked"
+                                        CommandParameter="{Binding .}"
+                                        SemanticProperties.Description="Toggle favorite" />
+                                <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                       Text="{Binding DateAndLocation}"
+                                       TextColor="#5D4E9D"
+                                       FontAttributes="Bold" />
+                                <Label Grid.Row="2" Grid.ColumnSpan="2"
+                                       Text="{Binding Description}"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="3"
+                                       TextColor="Gray" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </Grid>
+
+</ContentPage>

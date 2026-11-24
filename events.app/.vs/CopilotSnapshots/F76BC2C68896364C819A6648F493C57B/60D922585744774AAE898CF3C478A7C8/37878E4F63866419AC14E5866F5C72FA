@@ -1,0 +1,9 @@
+﻿namespace events.app;
+
+public partial class ContactPage : ContentPage
+{
+    public ContactPage()
+    {
+        InitializeComponent();
+    }
+}

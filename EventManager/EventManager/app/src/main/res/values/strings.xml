@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">Event Manager</string>
+    <string name="title_event_list">All Events</string>
+    <string name="title_add_event">Add New Event</string>
+    <string name="title_edit_event">Edit Event</string>
+    <string name="title_event_detail">Event Details</string>
+    <string name="title_add_session">Add Session</string>
+    <string name="title_edit_session">Edit Session</string>
+
+    <string name="label_event_name">Event Name</string>
+    <string name="label_event_date">Event Date (dd/MM/yyyy)</string>
+    <string name="label_event_location">Event Location</string>
+    <string name="label_event_organiser">Event Organiser</string>
+    <string name="label_event_type">Event Type</string>
+    <string name="label_event_status">Event Status</string>
+    <string name="label_event_description">Event Description</string>
+    <string name="label_contact_email">Contact Email</string>
+    <string name="label_contact_phone">Contact Phone</string>
+
+    <string name="hint_event_name">Enter event name</string>
+    <string name="hint_event_date">DD/MM/YYYY</string>
+    <string name="hint_event_location">Enter location</string>
+    <string name="hint_event_organiser">Enter organiser name</string>
+    <string name="hint_event_description">Enter event description</string>
+    <string name="hint_contact_email">email@example.com</string>
+    <string name="hint_contact_phone">+84...</string>
+
+    <string name="type_conference">Conference</string>
+    <string name="type_workshop">Workshop</string>
+    <string name="type_seminar">Seminar</string>
+    <string name="type_social">Social</string>
+    <string name="type_other">Other</string>
+
+    <!-- Session Types -->
+    <string name="session_type_workshop">Workshop</string>
+    <string name="session_type_presentation">Presentation</string>
+    <string name="session_type_panel">Panel Discussion</string>
+    <string name="session_type_networking">Networking</string>
+    <string name="session_type_keynote">Keynote</string>
+    <string name="session_type_others">Others</string>
+
+    <string name="label_session_name">Session Name</string>
+    <string name="label_session_time">Time (e.g. 09:00 - 10:30)</string>
+    <string name="label_session_speaker">Speaker</string>
+    <string name="label_session_room">Room / Location</string>
+    <string name="label_session_type">Session Type</string>
+    <string name="label_session_description">Session Description</string>
+
+    <string name="status_upcoming">Upcoming</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_cancelled">Cancelled</string>
+
+    <string name="btn_save">Save Event</string>
+    <string name="btn_update">Update Event</string>
+    <string name="btn_save_session">Save Session</string>
+    <string name="btn_update_session">Update Session</string>
+    <string name="btn_confirm">Confirm &amp; Save</string>
+    <string name="empty_events">No events found. Tap + to add a new event.</string>
+    <string name="empty_sessions">No sessions found for this event.</string>
+
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_date">Invalid date format. Please use dd/MM/yyyy</string>
+    <string name="error_invalid_email">Invalid email format</string>
+    <string name="error_duplicate_event">An event with this name and date already exists!</string>
+
+    <string name="confirm_dialog_title">Confirm Event Information</string>
+    <string name="confirm_dialog_message">Please review your event details before saving:</string>
+    <string name="label_total_sessions">Total Sessions: %d</string>
+
+    <string name="delete_confirm_title">Delete Event</string>
+    <string name="delete_confirm_message">Are you sure you want to delete this event and all its sessions?</string>
+    <string name="delete_session_title">Delete Session</string>
+    <string name="delete_session_message">Are you sure you want to delete this session?</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <string name="search_hint">Search events (name, desc, organiser, date)...</string>
+    <string name="search_sessions_hint">Search sessions...</string>
+    <string name="menu_advanced_search">Advanced Search</string>
+    <string name="title_advanced_search">Advanced Search Options</string>
+    <string name="filter_by_date">Filter by Date (dd/MM/yyyy)</string>
+    <string name="filter_by_organiser">Filter by Organiser</string>
+    <string name="btn_apply">Apply Filter</string>
+    <string name="btn_clear">Clear Filter</string>
+</resources>

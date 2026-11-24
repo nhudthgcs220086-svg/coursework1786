@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="events.app.EventDetailPage"
+             Title="Event details">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Label x:Name="TitleLabel"
+                   FontSize="30"
+                   FontAttributes="Bold" />
+            <Label x:Name="DateLocationLabel"
+                   FontSize="17"
+                   TextColor="#5D4E9D"
+                   FontAttributes="Bold" />
+            <BoxView HeightRequest="1" Color="#DDDDDD" />
+            <Label Text="Description" FontSize="20" FontAttributes="Bold" />
+            <Label x:Name="DescriptionLabel"
+                   FontSize="17"
+                   TextColor="Gray" />
+            <Label x:Name="TypeLabel" FontSize="16" />
+            <Label x:Name="OrganiserLabel" FontSize="16" />
+            <Label x:Name="ContactLabel" FontSize="16" TextColor="Gray" />
+            <Label Text="Sessions" FontSize="22" FontAttributes="Bold" Margin="0,8,0,0" />
+            <ActivityIndicator x:Name="SessionLoadingIndicator"
+                               IsVisible="False"
+                               IsRunning="False"
+                               HorizontalOptions="Start" />
+            <Label x:Name="SessionStatusLabel"
+                   TextColor="Gray"
+                   IsVisible="False" />
+            <CollectionView x:Name="SessionsCollection"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#DDDDDD" StrokeThickness="1" Padding="12" Margin="0,0,0,8">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                                <Label Text="{Binding Time}" TextColor="#5D4E9D" FontAttributes="Bold" />
+                                <Label Text="{Binding Room}" TextColor="Gray" />
+                                <Label Text="{Binding Speaker}" TextColor="Gray" />
+                                <Label Text="{Binding Description}" TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <BoxView HeightRequest="1" Color="#DDDDDD" Margin="0,8" />
+            <Label Text="Ask about this event" FontSize="22" FontAttributes="Bold" />
+            <Entry x:Name="NameEntry" Placeholder="Name" />
+            <Entry x:Name="EmailEntry" Placeholder="Email" Keyboard="Email" />
+            <Entry x:Name="PhoneEntry" Placeholder="Phone" Keyboard="Telephone" />
+            <Editor x:Name="MessageEditor"
+                    Placeholder="What would you like to ask?"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="100" />
+            <Button x:Name="SubmitButton"
+                    Text="Submit"
+                    Clicked="OnSubmitClicked" />
+            <Label x:Name="SubmitStatusLabel"
+                   IsVisible="False"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

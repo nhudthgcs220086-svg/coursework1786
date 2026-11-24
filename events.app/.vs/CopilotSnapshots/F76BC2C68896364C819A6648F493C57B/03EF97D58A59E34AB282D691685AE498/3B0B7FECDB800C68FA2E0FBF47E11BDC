@@ -1,0 +1,134 @@
+﻿using System.Collections.ObjectModel;
+using System.Text.Json;
+using events.app.Models;
+using events.app.Services;
+
+namespace events.app;
+
+public partial class MainPage : ContentPage
+{
+    private const string FavoritesKey = "favorite-event-ids";
+    private readonly EventService eventService;
+    private readonly ObservableCollection<Event> allEvents = [];
+    private readonly HashSet<string> favoriteIds = [];
+    private bool showingFavorites;
+    private SearchBar SearchBox = null!;
+    private Button FavoritesButton = null!;
+    private ActivityIndicator LoadingIndicator = null!;
+    private Label StatusLabel = null!;
+    private CollectionView EventsCollection = null!;
+
+    public MainPage(EventService eventService)
+    {
+        InitializeComponent();
+        SearchBox = this.FindByName<SearchBar>(nameof(SearchBox));
+        FavoritesButton = this.FindByName<Button>(nameof(FavoritesButton));
+        LoadingIndicator = this.FindByName<ActivityIndicator>(nameof(LoadingIndicator));
+        StatusLabel = this.FindByName<Label>(nameof(StatusLabel));
+        EventsCollection = this.FindByName<CollectionView>(nameof(EventsCollection));
+        this.eventService = eventService;
+        LoadFavorites();
+        EventsCollection.ItemsSource = allEvents;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (allEvents.Count == 0)
+            await LoadEventsAsync();
+    }
+
+    private async Task LoadEventsAsync()
+    {
+        LoadingIndicator.IsVisible = true;
+        LoadingIndicator.IsRunning = true;
+        StatusLabel.IsVisible = false;
+
+        try
+        {
+            var events = await eventService.GetEventsAsync();
+            allEvents.Clear();
+            foreach (var item in events)
+            {
+                item.IsFavorite = favoriteIds.Contains(item.Id);
+                allEvents.Add(item);
+            }
+
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            StatusLabel.Text = $"Could not load events.\n{ex.Message}";
+            StatusLabel.IsVisible = true;
+        }
+        finally
+        {
+            LoadingIndicator.IsRunning = false;
+            LoadingIndicator.IsVisible = false;
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        var query = SearchBox.Text?.Trim() ?? string.Empty;
+        var filtered = allEvents.Where(item =>
+            (!showingFavorites || item.IsFavorite) &&
+            (string.IsNullOrWhiteSpace(query) ||
+             item.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+             item.Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+             item.Location.Contains(query, StringComparison.OrdinalIgnoreCase))).ToList();
+
+        EventsCollection.ItemsSource = filtered;
+        if (!LoadingIndicator.IsVisible)
+        {
+            StatusLabel.Text = allEvents.Count == 0
+                ? "No events are available yet."
+                : filtered.Count == 0 ? "No matching events found." : string.Empty;
+            StatusLabel.IsVisible = filtered.Count == 0;
+        }
+    }
+
+    private void OnSearchTextChanged(object? sender, TextChangedEventArgs e) => ApplyFilter();
+
+    private void OnFavoritesClicked(object? sender, EventArgs e)
+    {
+        showingFavorites = !showingFavorites;
+        FavoritesButton.Text = showingFavorites ? "★ Favorites" : "☆ Favorites";
+        ApplyFilter();
+    }
+
+    private async void OnRefreshClicked(object? sender, EventArgs e) => await LoadEventsAsync();
+
+    private void OnFavoriteClicked(object? sender, EventArgs e)
+    {
+        if (sender is not Button { CommandParameter: Event item })
+            return;
+
+        item.IsFavorite = !item.IsFavorite;
+        if (item.IsFavorite)
+            favoriteIds.Add(item.Id);
+        else
+            favoriteIds.Remove(item.Id);
+
+        Preferences.Set(FavoritesKey, JsonSerializer.Serialize(favoriteIds));
+        ApplyFilter();
+    }
+
+    private void LoadFavorites()
+    {
+        var stored = Preferences.Get(FavoritesKey, string.Empty);
+        if (string.IsNullOrWhiteSpace(stored))
+            return;
+
+        try
+        {
+            var savedIds = JsonSerializer.Deserialize<HashSet<string>>(stored);
+            if (savedIds is not null)
+                favoriteIds.UnionWith(savedIds);
+        }
+        catch (JsonException)
+        {
+            Preferences.Remove(FavoritesKey);
+        }
+    }
+}

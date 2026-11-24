@@ -1,0 +1,82 @@
+﻿using System.Globalization;
+using events.app.Models;
+using Firebase.Database;
+using Firebase.Database.Query;
+using Newtonsoft.Json.Linq;
+
+namespace events.app.Services;
+
+public sealed class EventService
+{
+    private const string DatabaseUrl = "https://event-manager-e0e3d-default-rtdb.firebaseio.com/";
+    private readonly FirebaseClient firebaseClient = new(DatabaseUrl);
+
+    public async Task<IReadOnlyList<Event>> GetEventsAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var items = await firebaseClient
+            .Child("events")
+            .OnceAsync<JObject>();
+
+        var events = new List<Event>();
+        var index = 0;
+
+        foreach (var entry in items)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (entry.Object is null) continue;
+
+            var obj = entry.Object;
+            var fallbackId = string.IsNullOrWhiteSpace(entry.Key)
+                ? index++.ToString(CultureInfo.InvariantCulture)
+                : entry.Key;
+
+            var title = GetString(obj, "title", "name", "eventName");
+            var date = GetString(obj, "date", "eventDate", "startDate", "datetime");
+            var location = GetString(obj, "location", "venue", "address");
+            var description = GetString(obj, "description", "details", "summary");
+            var imageUrl = GetString(obj, "imageUrl", "image", "photoUrl", "thumbnail");
+            var type = GetString(obj, "type", "eventType");
+            var organiser = GetString(obj, "organiser", "organizer", "organiserName");
+            var contactEmail = GetString(obj, "contactEmail", "email");
+            var contactPhone = GetString(obj, "contactPhone", "phone");
+            var id = GetString(obj, "id", "eventId") ?? fallbackId;
+
+            events.Add(new Event
+            {
+                Id = id,
+                Title = string.IsNullOrWhiteSpace(title) ? "Untitled event" : title,
+                Date = date ?? string.Empty,
+                Location = location ?? string.Empty,
+                Description = description ?? string.Empty,
+                ImageUrl = imageUrl ?? string.Empty,
+                Type = type ?? string.Empty,
+                Organiser = organiser ?? string.Empty,
+                ContactEmail = contactEmail ?? string.Empty,
+                ContactPhone = contactPhone ?? string.Empty
+            });
+        }
+
+        return events;
+    }
+
+    public async Task SubmitContactRequestAsync(ContactRequest request, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await firebaseClient.Child("contactRequests").PostAsync(request);
+    }
+
+    private static string? GetString(JObject obj, params string[] names)
+    {
+        foreach (var name in names)
+        {
+            var prop = obj.Properties()
+                .FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (prop is not null && prop.Value.Type != JTokenType.Null)
+                return prop.Value.ToString();
+        }
+        return null;
+    }
+}

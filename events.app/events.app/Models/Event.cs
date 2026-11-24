@@ -1,0 +1,24 @@
+using System.Text.Json.Serialization;
+
+namespace events.app.Models;
+
+public sealed class Event
+{
+    public string Id { get; set; } = string.Empty;
+    public string Title { get; set; } = "Untitled event";
+    public string Description { get; set; } = string.Empty;
+    public string Date { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public string Organiser { get; set; } = string.Empty;
+    public string ContactEmail { get; set; } = string.Empty;
+    public string ContactPhone { get; set; } = string.Empty;
+    public bool IsFavorite { get; set; }
+
+    [JsonIgnore]
+    public string FavoriteIcon => IsFavorite ? "★" : "☆";
+
+    [JsonIgnore]
+    public string DateAndLocation => string.Join(" • ", new[] { Date, Location }.Where(value => !string.IsNullOrWhiteSpace(value)));
+}

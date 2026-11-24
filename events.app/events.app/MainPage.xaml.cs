@@ -1,0 +1,106 @@
+﻿using System.Collections.ObjectModel;
+using events.app.Models;
+using events.app.Services;
+
+namespace events.app;
+
+public partial class MainPage : ContentPage
+{
+    private readonly EventService eventService;
+    private readonly FavoriteService favoriteService;
+    private readonly ObservableCollection<Event> allEvents = [];
+    private bool showingFavorites;
+
+    public MainPage(EventService eventService, FavoriteService favoriteService)
+    {
+        InitializeComponent();
+        this.eventService = eventService;
+        this.favoriteService = favoriteService;
+        EventsCollection.ItemsSource = allEvents;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (allEvents.Count == 0)
+            await LoadEventsAsync();
+    }
+
+    private async Task LoadEventsAsync()
+    {
+        LoadingIndicator.IsVisible = true;
+        LoadingIndicator.IsRunning = true;
+        StatusLabel.IsVisible = false;
+
+        try
+        {
+            var events = await eventService.GetEventsAsync();
+            allEvents.Clear();
+            foreach (var item in events)
+            {
+                item.IsFavorite = favoriteService.IsFavorite(item.Id);
+                allEvents.Add(item);
+            }
+
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            StatusLabel.Text = $"Could not load events.\n{ex.Message}";
+            StatusLabel.IsVisible = true;
+        }
+        finally
+        {
+            LoadingIndicator.IsRunning = false;
+            LoadingIndicator.IsVisible = false;
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        var query = SearchBox.Text?.Trim() ?? string.Empty;
+        var filtered = allEvents.Where(item =>
+            (!showingFavorites || item.IsFavorite) &&
+            (string.IsNullOrWhiteSpace(query) ||
+             item.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+             item.Date.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+             item.Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+             item.Location.Contains(query, StringComparison.OrdinalIgnoreCase))).ToList();
+
+        EventsCollection.ItemsSource = filtered;
+        if (!LoadingIndicator.IsVisible)
+        {
+            StatusLabel.Text = allEvents.Count == 0
+                ? "No events are available yet."
+                : filtered.Count == 0 ? "No matching events found." : string.Empty;
+            StatusLabel.IsVisible = filtered.Count == 0;
+        }
+    }
+
+    private void OnSearchTextChanged(object? sender, TextChangedEventArgs e) => ApplyFilter();
+
+    private void OnFavoritesClicked(object? sender, EventArgs e)
+    {
+        showingFavorites = !showingFavorites;
+        FavoritesButton.Text = showingFavorites ? "★ Favorites" : "☆ Favorites";
+        ApplyFilter();
+    }
+
+    private async void OnRefreshClicked(object? sender, EventArgs e) => await LoadEventsAsync();
+
+    private async void OnEventTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is Border { BindingContext: Event item })
+            await Navigation.PushAsync(new EventDetailPage(item, eventService));
+    }
+
+    private void OnFavoriteClicked(object? sender, EventArgs e)
+    {
+        if (sender is not Button { CommandParameter: Event item })
+            return;
+
+        favoriteService.Toggle(item.Id);
+        item.IsFavorite = favoriteService.IsFavorite(item.Id);
+        ApplyFilter();
+    }
+}

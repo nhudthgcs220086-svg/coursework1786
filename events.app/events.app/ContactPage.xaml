@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="events.app.ContactPage"
+             Title="Contact">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="18">
+            <Label Text="Contact us"
+                   FontSize="30"
+                   FontAttributes="Bold" />
+            <Label Text="Have a question about an event? Get in touch with us."
+                   FontSize="17"
+                   TextColor="Gray" />
+            <BoxView HeightRequest="1" Color="#DDDDDD" Margin="0,8" />
+            <Label Text="Send us a message" FontSize="22" FontAttributes="Bold" />
+            <Entry x:Name="NameEntry" Placeholder="Name" />
+            <Entry x:Name="EmailEntry" Placeholder="Email" Keyboard="Email" />
+            <Entry x:Name="PhoneEntry" Placeholder="Phone" Keyboard="Telephone" />
+            <Editor x:Name="MessageEditor"
+                    Placeholder="What would you like to ask?"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="100" />
+            <Button x:Name="SubmitButton"
+                    Text="Submit"
+                    Clicked="OnSubmitClicked" />
+            <Label x:Name="StatusLabel"
+                   IsVisible="False"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

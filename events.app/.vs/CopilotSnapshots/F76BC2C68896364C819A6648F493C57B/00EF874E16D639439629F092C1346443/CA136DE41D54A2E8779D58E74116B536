@@ -1,0 +1,24 @@
+﻿using events.app.Models;
+
+namespace events.app;
+
+public partial class EventDetailPage : ContentPage
+{
+    public EventDetailPage(Event eventItem)
+    {
+        InitializeComponent();
+
+        TitleLabel.Text = eventItem.Title;
+        DateLocationLabel.Text = eventItem.DateAndLocation;
+        DescriptionLabel.Text = string.IsNullOrWhiteSpace(eventItem.Description)
+            ? "No description available."
+            : eventItem.Description;
+        TypeLabel.Text = string.IsNullOrWhiteSpace(eventItem.Type) ? string.Empty : $"Type: {eventItem.Type}";
+        OrganiserLabel.Text = string.IsNullOrWhiteSpace(eventItem.Organiser) ? string.Empty : $"Organiser: {eventItem.Organiser}";
+        ContactLabel.Text = string.Join(" • ", new[]
+        {
+            eventItem.ContactEmail,
+            eventItem.ContactPhone
+        }.Where(value => !string.IsNullOrWhiteSpace(value)));
+    }
+}
